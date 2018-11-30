@@ -1,7 +1,7 @@
 CC = gc
 CXX = g++
 NVCC = nvcc
-CFLAGS = -Wall -O3 -std=c++11
+CFLAGS = -Wall -O3 -std=c++11 -DCUDA
 NVCCFLAGS= -std=c++11 -c -arch=sm_30
 # cuda library
 CULIBS= -lopenblas -lpthread -lcudart -lcublas
@@ -12,17 +12,17 @@ LIBDIRS=-L/usr/local/cuda/lib64 -L/usr/lib/x86_64-linux-gnu/
 # path of general include headers
 INCDIRS=-I/usr/local/cuda/include -I/usr/include/opencv2
 
-BIN = main
+BIN = main 
 OBJ = 
-CUOBJ =
-CUBIN =
+CUOBJ = cu.o
+CUBIN = 
 
-all: $(BIN) $(OBJ) $(CUOBJ) $(CUBIN) 
-main: reference_main.cpp
-
+all: $(CUOBJ) $(BIN) $(OBJ) $(CUBIN) 
+cu.o: student_func.cu
+main: reference_main.cpp 
 
 $(BIN) :
-	$(CXX) $(CFLAGS) -o $@ $(filter %.cpp %.o %.c, $^)  $(LIBDIRS) $(INCDIRS) $(CULIBS) $(LIBS) 
+	$(CXX) $(CFLAGS) -o $@ $(filter %.cpp %.o %.c, $^) cu.o  $(LIBDIRS) $(INCDIRS) $(CULIBS) $(LIBS) 
 
 $(OBJ) :
 	$(CXX) -c $(CFLAGS) -o $@ $(firstword $(filter %.cpp %.c, $^) )

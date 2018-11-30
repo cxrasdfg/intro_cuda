@@ -67,8 +67,9 @@ void preProcess(uchar4 **inputImage, unsigned char **greyImage,
 void postProcess(const std::string& output_file) {
   const int numPixels = numRows() * numCols();
   //copy the output back to the host
+#ifdef CUDA
   checkCudaErrors(cudaMemcpy(imageGrey.ptr<unsigned char>(0), d_greyImage__, sizeof(unsigned char) * numPixels, cudaMemcpyDeviceToHost));
-
+#endif
   //output the image
   cv::imwrite(output_file.c_str(), imageGrey);
 
