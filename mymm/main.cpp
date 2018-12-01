@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "timer.h"
 
 /**
 *** implementation of A x B  ***
@@ -20,6 +21,7 @@ void fmm(
 }
 
 void mat_print(const float * const _data,size_t m,size_t n){
+    return;
     for(size_t i =0;i<m;i++){    
         for (size_t j=0;j<n;j++){
             printf("%.2f \t", _data[i*n+j]);
@@ -58,18 +60,18 @@ void mat_zero(float * const _data,size_t m,size_t n){
     }
 }
 int main(int argc, char ** argv) {
-	const int aM=33;
-    const int aN=5;
-    const int bN=10;
+	const int aM=1200;
+    const int aN=1200;
+    const int bN=1200;
 	const int SIZE_A = sizeof(float)*aM*aN;
     const int SIZE_B = sizeof(float)*aN*bN; 
     const int SIZE_C = sizeof(float)*aM*bN;
 
 	// generate the input array on the host
-	float h_A[SIZE_A]={0};
-    float h_B[SIZE_B]={0};
-	float h_C[SIZE_C]={0};
-    float h_out[SIZE_C]={0};
+	float *h_A=new float[SIZE_A]();
+    float *h_B=new float[SIZE_B]();
+	float *h_C=new float[SIZE_C]();
+    float *h_out=new float[SIZE_C]();
     
     mat_init(h_A,aM,aN,0);
     mat_init(h_B,aN,bN,1);
@@ -77,8 +79,12 @@ int main(int argc, char ** argv) {
     mat_print(h_A,aM,aN);
     printf("B:\n");
     mat_print(h_B,aN,bN);
-    printf("Results of A x B:\n");
+    printf("Results of A x B (CPU):\n");
+    GpuTimer timer;
+    timer.Start();
     fmm(h_A,h_B,h_C,aM,aN,bN);
+    timer.Stop();
+    printf("%f msecs.\n", timer.Elapsed());
     mat_print(h_C,aM,bN);
 
     printf("******  use cuda  *******\n");
@@ -100,7 +106,10 @@ int main(int argc, char ** argv) {
 
 	// launch the kernel
 	// cube<<<1, ARRAY_SIZE>>>(d_out, d_in);
+    timer.Start();
     fmm_cu(d_A,d_B,d_C,aM,aN,bN);
+    timer.Stop();
+    printf("%f msecs.\n", timer.Elapsed());
 
 	// copy back the result array to the CPU
 	cudaMemcpy(h_out, d_C, SIZE_C, cudaMemcpyDeviceToHost);
@@ -110,6 +119,12 @@ int main(int argc, char ** argv) {
 	cudaFree(d_A);
 	cudaFree(d_B);
     cudaFree(d_C);
+    
+    delete [] h_A;
+    delete [] h_B;
+    delete [] h_C;
+    delete [] h_out;
+    
 
 	return 0;
 }
