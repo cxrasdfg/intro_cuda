@@ -17,6 +17,7 @@ void __kernel_mm__(
     int beginRow=bsi*tsh+tsi;
     int beginCol=bsj*tsw+tsj;
     
+    float sum=.0;
     //printf("the dim y:%d",gridDim.y);
     //return;
     if (beginRow < aM && beginCol<bN){
@@ -25,10 +26,11 @@ void __kernel_mm__(
         //printf("%d ", idx);
         for(int i=0;i<aN;i++){
             
-            C[idx]+=(A[beginRow*aN+i])*(B[i*bN+beginCol]); 
+            sum+=(A[beginRow*aN+i])*(B[i*bN+beginCol]); 
             //printf("%.2f ",A[beginRow*aN+i]);
             //printf("%.2f ",C[idx]);
         }
+        C[idx]=sum;
     }
 }
 
