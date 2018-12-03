@@ -60,9 +60,9 @@ void mat_zero(float * const _data,size_t m,size_t n){
     }
 }
 int main(int argc, char ** argv) {
-	const int aM=1200;
-    const int aN=1200;
-    const int bN=1200;
+	const int aM=2000;
+    const int aN=2000;
+    const int bN=2000;
 	const int SIZE_A = sizeof(float)*aM*aN;
     const int SIZE_B = sizeof(float)*aN*bN; 
     const int SIZE_C = sizeof(float)*aM*bN;
@@ -75,9 +75,9 @@ int main(int argc, char ** argv) {
     
     mat_init(h_A,aM,aN,0);
     mat_init(h_B,aN,bN,1);
-    printf("A:\n");
+    //printf("A:\n");
     mat_print(h_A,aM,aN);
-    printf("B:\n");
+    //printf("B:\n");
     mat_print(h_B,aN,bN);
     printf("Results of A x B (CPU):\n");
     GpuTimer timer;
@@ -88,6 +88,7 @@ int main(int argc, char ** argv) {
     mat_print(h_C,aM,bN);
 
     printf("******  use cuda  *******\n");
+    printf("Results of A x B (GPU):\n");
 	// declare GPU memory pointers
 	float * d_A;
 	float * d_B;
